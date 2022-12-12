@@ -1,9 +1,10 @@
 /*
-- 메뉴의 이름을 입력 받고 엔터키 입력으로 추가한다.
-- 추가되는 메뉴의 마크업은 `<ul id="espresso-menu-list" class="mt-3 pl-0"></ul>` 안에 삽입해야 한다.
-- 총 메뉴 갯수를 count하여 상단에 보여준다.
-- 메뉴가 추가되고 나면, input(입력창)은 빈 값으로 초기화한다.
-- 사용자 입력값이 빈 값이라면 추가되지 않는다.
+- [O] 메뉴의 이름을 입력 받고 엔터키 입력으로 추가한다.
+- [ ] 메뉴의 이름을 입력 받고 확인 버튼을 클릭할 때 추가한다.
+- [O] 추가되는 메뉴의 마크업은 `<ul id="espresso-menu-list" class="mt-3 pl-0"></ul>` 안에 삽입해야 한다.
+- [O] 총 메뉴 갯수를 count하여 상단에 보여준다.
+- [O] 메뉴가 추가되고 나면, input(입력창)은 빈 값으로 초기화한다.
+- [O] 사용자 입력값이 빈 값이라면 추가되지 않는다.
 
 */
 
@@ -26,8 +27,28 @@ function App() {
     e.preventDefault();
   });
 
+  //재사용할 수 있는 함수 만들기
+  const espressoMenuName = () => {};
+
+  //메뉴 입력 후 확인 버튼을 클릭하면 메뉴 추가하기
+  $("#espresso-menu-submit-button").addEventListener("click", () => {});
+
   //메뉴의 이름 입력받기
   $("#espresso-menu-name").addEventListener("keypress", (e) => {
+    //3) 엔터키가 아닐 땐 무조건 메뉴 추가 안되게.
+    if (e.key !== "Enter") {
+      return;
+    }
+
+    //사용자 입력값이 빈 값일때 추가되지 않게 예외사항 만들기.
+    //1) value가 빈 문자열일때 > alert 띄우기
+    if ($("#espresso-menu-name").value === "") {
+      alert("값을 입력해주세요.");
+      return; //2) 리턴을 해주면 엔터키 눌렀을 때 메뉴 추가되는 코드 실행 X
+      //이렇게 되면 엔터키가 아니라 스페이스키를 눌러도 값 입력하라고 뜸.
+      //그래서 최상단에서 엔터키가 아니면 메뉴 추가 안되게 설정.
+    }
+
     //엔터키입력을 눌렀을 때 입력창에 있는 값 콘솔에 찍어보기
     if (e.key === "Enter") {
       //value가 가져오는 값을 변수에 담아서 활용하기
@@ -75,6 +96,14 @@ function App() {
       //몇개인지 카운팅 > length로 확인
       const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
       $(".menu-count").innerText = `총 ${menuCount} 개`;
+
+      //메뉴가 추가되고 나면, input(입력창)은 빈 값으로 초기화하기.
+
+      //메뉴 추가 후 value값 빈값으로 바꾸기
+      $("#espresso-menu-name").value = "";
+
+      //사용자 입력값이 빈 값일때 추가되지 않게 예외사항 만들기.
+      //>> 메뉴 추가 초반부에 설정함.
     }
   });
 }
