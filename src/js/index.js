@@ -9,20 +9,40 @@
 */
 
 const $ = (selector) => document.querySelector(selector);
-//document.querySeletor가 반복적으로 사용되고 있음. $(달러)표시는 JS에서의 DOM Element를 가져올 때 관용적으로 많이 사용되는데,  이 $ 표시를 이용해서 이러한 document.querySelector를 리턴해주는 형태로 만들어 이걸 재사용할 것. 여기 문법에서는 한줄로 코드를 썼는데 이렇게 한줄로 쓰면 이걸 바로 리턴해준다는 의미임.
+//document.querySeletor가 반복적으로 사용되고 있음. $(달러)표시는 document.querySelector를 리턴해주는 형태로 만들어 이걸 재사용할 것.
 
 function App() {
-  //form 태그가 자동으로 전송되는 걸 방지하기. (엔터키를 누르면 자동으로 전송됨 > 이를 막기)
-  //자동으로 전송되는 이벤트가 "submit", 그 이벤트를 막기 위해 preventDefault() 설정하기
+  //TODO 메뉴 수정
+  // - [ ] 메뉴의 수정 버튼 클릭 이벤트를 받고, 메뉴 수정 모달창(prompt)이 뜬다.
+  // - [ ] 모달창에서 신규 메뉴명을 입력 받고, 확인 버튼을 누르면 메뉴가 수정된다.
 
-  //$로 바꾸기 전.
-  // document
-  //   .querySelector("#espresso-menu-form")
-  //   .addEventListener("submit", (e) => {
-  //     e.preventDefault();
-  //   });
+  $("#espresso-menu-list").addEventListener("click", (e) => {
+    //콘솔로 e.target을 찍어보면 (수정버튼 클릭)
+    //<button type="button" class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button"> 수정 </button>
+    //가 출력됨. (menu-edit-button인걸 잘인식함!)
+    // console.log(e.target);
 
-  //$로 교체한 이후 (코드가 짧아짐.)
+    //클릭한 요소의 클래스들 중에 "menu-edit-button"이 포함되어있다면 = 수정버튼이라는 것
+    if (e.target.classList.contains("menu-edit-button")) {
+      //closeset() : 가장 가까운 선택자로.
+      //object형태로 오기 때문에 뒤에 innerText붙여서
+      //텍스트 그대로 받아오기.
+
+      //코드 재사용 높기 위해
+      const $menuName = e.target.closest("li").querySelector(".menu-name");
+
+      //"모달창 메세지", "입력창에 있는 default"=메뉴명그대로
+      //모달창에서 수정된 값은 promt가 리턴한 값임.
+      const updatedMenuName = prompt(
+        "메뉴명을 수정하세요.",
+        $menuName.innerText
+      );
+
+      //모달창에서 수정한 메뉴명으로 바꾸기!
+      $menuName.innerText = updatedMenuName;
+    }
+  });
+
   $("#espresso-menu-form").addEventListener("submit", (e) => {
     e.preventDefault();
   });
