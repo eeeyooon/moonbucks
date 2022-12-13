@@ -6,15 +6,21 @@
 - [O] 메뉴가 추가되고 나면, input(입력창)은 빈 값으로 초기화한다.
 - [O] 사용자 입력값이 빈 값이라면 추가되지 않는다.
 
+  //TODO 메뉴 수정
+  // - [O] 메뉴의 수정 버튼 클릭 이벤트를 받고, 메뉴 수정 모달창(prompt)이 뜬다.
+  // - [O] 모달창에서 신규 메뉴명을 입력 받고, 확인 버튼을 누르면 메뉴가 수정된다.
+
 */
 
 const $ = (selector) => document.querySelector(selector);
 //document.querySeletor가 반복적으로 사용되고 있음. $(달러)표시는 document.querySelector를 리턴해주는 형태로 만들어 이걸 재사용할 것.
 
 function App() {
-  //TODO 메뉴 수정
-  // - [ ] 메뉴의 수정 버튼 클릭 이벤트를 받고, 메뉴 수정 모달창(prompt)이 뜬다.
-  // - [ ] 모달창에서 신규 메뉴명을 입력 받고, 확인 버튼을 누르면 메뉴가 수정된다.
+  //총 메뉴 개수 count 코드도 따로 빼놓기
+  const updateMenuCount = () => {
+    const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
+    $(".menu-count").innerText = `총 ${menuCount} 개`;
+  };
 
   $("#espresso-menu-list").addEventListener("click", (e) => {
     //콘솔로 e.target을 찍어보면 (수정버튼 클릭)
@@ -40,6 +46,22 @@ function App() {
 
       //모달창에서 수정한 메뉴명으로 바꾸기!
       $menuName.innerText = updatedMenuName;
+    }
+
+    //   - [O]메뉴 삭제 버튼 클릭 이벤트를 받고, 메뉴    삭제를 재확인하는 `confirm` 모달창이 뜬다.
+    // - [ ] 확인 버튼을 클릭하면 메뉴가 삭제된다.
+    // - [ ] 총 메뉴 개수를 count하여 상단에 보여준다.
+
+    //메뉴 삭제하기
+
+    if (e.target.classList.contains("menu-remove-button")) {
+      if (confirm("정말 삭제하시겠습니까?")) {
+        //true면 삭제, false면 삭제 X
+        //삭제할땐 li태그만(메뉴 리스트의 최상위 요소)
+        e.target.closest("li").remove();
+        //총 개수도 다시 업데이트
+        updateMenuCount();
+      }
     }
   });
 
@@ -96,9 +118,9 @@ function App() {
     // count하는 방법? > li의 개수를 카운팅한다.
     //const 변수 = li 개수를 카운팅. > querySelector는 li 중 첫번째 요소만 가져옴. 모든 요소를 가져오고 싶을 땐 querySelectorAll.
     //몇개인지 카운팅 > length로 확인
-    const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
-    $(".menu-count").innerText = `총 ${menuCount} 개`;
+    // > 맨 위에서 따로 빼놓음.
 
+    updateMenuCount();
     //메뉴가 추가되고 나면, input(입력창)은 빈 값으로 초기화하기.
 
     //메뉴 추가 후 value값 빈값으로 바꾸기
