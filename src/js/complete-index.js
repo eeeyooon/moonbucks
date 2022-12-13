@@ -1,9 +1,10 @@
 const $ = (selector) => document.querySelector(selector);
 
 function App() {
-  $("#espresso-menu-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-  });
+  const updateMenuCount = () => {
+    const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
+    $(".menu-count").innerText = `총 ${menuCount}개`;
+  };
 
   const addMenuName = () => {
     if ($("#espresso-menu-name").value === "") {
@@ -35,15 +36,41 @@ function App() {
       menuItemTemplate(espressMenuName)
     );
 
-    const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
-    $(".menu-count").innerText = `총 ${menuCount} 개`;
+    updateMenuCount();
 
     $("#espresso-menu-name").value = "";
   };
 
-  $("#espresso-menu-submit-button").addEventListener("click", () => {
-    addMenuName();
+  const updatedMenuName = (e) => {
+    const $menuName = e.target.closest("li").querySelector(".menu-name");
+    const updatedMenuName = prompt("메뉴명을 수정하세요.", $menuName.innerText);
+    $menuName.innerText = updatedMenuName;
+  };
+
+  const removeMenuName = (e) => {
+    if (confirm("정말 삭제하시겠습니까?")) {
+      e.target.closest("li").remove();
+      updateMenuCount();
+    }
+  };
+
+  $("#espresso-menu-list").addEventListener("click", (e) => {
+    //메뉴 수정하기
+    if (e.target.classList.contains("menu-edit-button")) {
+      updatedMenuName(e);
+    }
+
+    //메뉴 삭제하기
+    if (e.target.classList.contains("menu-remove-button")) {
+      removeMenuName(e);
+    }
   });
+
+  $("#espresso-menu-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+  });
+
+  $("#espresso-menu-submit-button").addEventListener("click", addMenuName);
 
   $("#espresso-menu-name").addEventListener("keypress", (e) => {
     if (e.key !== "Enter") {
