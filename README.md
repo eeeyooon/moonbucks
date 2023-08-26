@@ -2,7 +2,7 @@
 
 # moonbucks 🌝
 
-## Vanilla JS 카페메뉴 앱
+### Vanilla JS 카페메뉴 앱
 
 <br/>
 
@@ -19,9 +19,7 @@
 
 <br/>
 
-[블랙커피 Vanilla JS](https://github.com/blackcoffee-study/moonbucks-menu)
-
-@MakerJun
+[블랙커피 Vanilla JS](https://github.com/blackcoffee-study/moonbucks-menu) @MakerJun
 
 </br>
 
@@ -33,13 +31,12 @@
 
 <br/>
 
-### 문벅스의 메뉴 관리 애플리케이션 개발
+### 메뉴 관리 애플리케이션 개발 Step
 
 1. 에스프레소 메뉴판 만들기
 2. 여러 개의 메뉴판 만들기
 3. 웹 서버에 api 요청하기
 
-<br/>
 <br/>
 
 ## 🎯 step1 요구사항 - 돔 조작과 이벤트 핸들링으로 메뉴 관리하기
