@@ -7,7 +7,7 @@ const store = {
     localStorage.setItem("menu", JSON.stringify(menu));
   },
   getLocalStorage() {
-    localStorage.getItem("menu");
+    return JSON.parse(localStorage.getItem("menu"));
   },
 };
 
@@ -17,24 +17,16 @@ function App() {
   // this.menu라는 상태의 값을 가질 수 있게 선언.
   this.menu = [];
 
-  // 메뉴 카운트하는 함수 따로 빼기
-  const updateMenuCount = () => {
-    const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
-    $(".menu-count").innerText = `총 ${menuCount}개`;
+  // 앱이 처음 생성될 때 (첫 로딩될 때) 로컬스토리지에서 데이터 가져오기 + 렌더링
+  this.init = () => {
+    if (store.getLocalStorage().length > 1) {
+      this.menu = store.getLocalStorage();
+    }
+    renderMenu();
   };
 
-  // 메뉴이름을 입력받고 li로 추가하는 함수
-  const addMenuName = () => {
-    if ($("#espresso-menu-name").value === "") {
-      alert("메뉴를 입력해주세요.");
-      return;
-    }
-    const espressoMenuName = $("#espresso-menu-name").value;
-    this.menu.push({ name: espressoMenuName });
-
-    // 로컬스토리지에 저장
-    store.setLocalStorage(this.menu);
-
+  // this.menu의 값을 가져서 화면에 렌더링 시키는 함수
+  const renderMenu = () => {
     const template = this.menu
       .map((menuItem, index) => {
         return `<li data-menu-id="${index}" class="menu-list-item d-flex items-center py-2">
@@ -62,6 +54,27 @@ function App() {
     // li 개수를 카운팅 > 함수로 뺌
 
     updateMenuCount();
+  };
+
+  // 메뉴 카운트하는 함수 따로 빼기
+  const updateMenuCount = () => {
+    const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
+    $(".menu-count").innerText = `총 ${menuCount}개`;
+  };
+
+  // 메뉴이름을 입력받고 li로 추가하는 함수
+  const addMenuName = () => {
+    if ($("#espresso-menu-name").value === "") {
+      alert("메뉴를 입력해주세요.");
+      return;
+    }
+    const espressoMenuName = $("#espresso-menu-name").value;
+    this.menu.push({ name: espressoMenuName });
+
+    // 로컬스토리지에 저장
+    store.setLocalStorage(this.menu);
+
+    renderMenu();
     $("#espresso-menu-name").value = "";
   };
 
@@ -114,3 +127,4 @@ function App() {
 }
 
 const app = new App();
+app.init();
