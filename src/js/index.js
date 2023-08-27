@@ -1,7 +1,22 @@
 // document.querySelector 유틸함수로 빼기
 const $ = (selector) => document.querySelector(selector);
 
+//로컬스토리지에 저장하고, 가져오는 객체
+const store = {
+  setLocalStorage(menu) {
+    localStorage.setItem("menu", JSON.stringify(menu));
+  },
+  getLocalStorage() {
+    localStorage.getItem("menu");
+  },
+};
+
 function App() {
+  // 상태(변하는 데이터) - 메뉴명
+  // 메뉴명은 App이란 함수, 객체가 가지고 있는 상태이기 때문에 this로 관리
+  // this.menu라는 상태의 값을 가질 수 있게 선언.
+  this.menu = [];
+
   // 메뉴 카운트하는 함수 따로 빼기
   const updateMenuCount = () => {
     const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
@@ -15,28 +30,33 @@ function App() {
       return;
     }
     const espressoMenuName = $("#espresso-menu-name").value;
-    const menuItemTemplate = (espressoMenuName) => {
-      return `<li class="menu-list-item d-flex items-center py-2">
-        <span class="w-100 pl-2 menu-name">${espressoMenuName}</span>
-        <button
-          type="button"
-          class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button"
-        >
-          수정
-        </button>
-        <button
-          type="button"
-          class="bg-gray-50 text-gray-500 text-sm menu-remove-button"
-        >
-          삭제
-        </button>
-      </li>`;
-    };
+    this.menu.push({ name: espressoMenuName });
 
-    $("#espresso-menu-list").insertAdjacentHTML(
-      "beforeend",
-      menuItemTemplate(espressoMenuName)
-    );
+    // 로컬스토리지에 저장
+    store.setLocalStorage(this.menu);
+
+    const template = this.menu
+      .map((menuItem) => {
+        return `<li class="menu-list-item d-flex items-center py-2">
+      <span class="w-100 pl-2 menu-name">${menuItem.name}</span>
+      <button
+        type="button"
+        class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button"
+      >
+        수정
+      </button>
+      <button
+        type="button"
+        class="bg-gray-50 text-gray-500 text-sm menu-remove-button"
+      >
+        삭제
+      </button>
+    </li>`;
+      })
+      .join("");
+
+    //li태그들을 하나로 묶었기 때문에 (template) innerHTML로 추가
+    $("#espresso-menu-list").innerHTML = template;
 
     // 총 카운트. menu-count 가져오기
     // li 개수를 카운팅 > 함수로 뺌
@@ -88,4 +108,4 @@ function App() {
   });
 }
 
-App();
+const app = new App();
