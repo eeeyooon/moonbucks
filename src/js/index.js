@@ -77,8 +77,13 @@ function App() {
 
   // 메뉴 삭제하는 함수
   const removeMenuName = (e) => {
-    e.target.closest("li").remove();
-    updateMenuCount();
+    if (confirm("메뉴를 삭제하시겠습니까?")) {
+      const menuId = e.target.closest("li").dataset.menuId;
+      this.menu.splice(menuId, 1);
+      e.target.closest("li").remove();
+      store.setLocalStorage(this.menu);
+      updateMenuCount();
+    }
   };
 
   // 버튼 클릭 시 메뉴 수정 및 삭제 함수 실행
@@ -88,9 +93,7 @@ function App() {
     }
 
     if (e.target.classList.contains("menu-remove-button")) {
-      if (confirm("메뉴를 삭제하시겠습니까?")) {
-        removeMenuName(e);
-      }
+      removeMenuName(e);
     }
   });
 
