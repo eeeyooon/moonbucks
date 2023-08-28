@@ -39,7 +39,9 @@ function App() {
     const template = this.menu[this.currentCategory]
       .map((menuItem, index) => {
         return `<li data-menu-id="${index}" class="menu-list-item d-flex items-center py-2">
-      <span class="w-100 pl-2 menu-name">${menuItem.name}</span>
+      <span class="${
+        menuItem.soldOut ? "sold-out" : ""
+      } w-100 pl-2 menu-name">${menuItem.name}</span>
       <button
       type="button"
       class="bg-gray-50 text-gray-500 text-sm mr-1 menu-sold-out-button"
@@ -114,14 +116,30 @@ function App() {
     }
   };
 
-  // 버튼 클릭 시 메뉴 수정 및 삭제 함수 실행
+  // 메뉴 품절 함수
+  const soldOutMenu = (e) => {
+    const menuId = e.target.closest("li").dataset.menuId;
+    this.menu[this.currentCategory][menuId].soldOut =
+      !this.menu[this.currentCategory][menuId].soldOut;
+    store.setLocalStorage(this.menu);
+    renderMenu();
+  };
+
+  // 수정, 삭제, 품절 버튼 로직 처리
   $("#menu-list").addEventListener("click", (e) => {
     if (e.target.classList.contains("menu-edit-button")) {
       updateMenuName(e);
+      return;
     }
 
     if (e.target.classList.contains("menu-remove-button")) {
       removeMenuName(e);
+      return;
+    }
+
+    if (e.target.classList.contains("menu-sold-out-button")) {
+      soldOutMenu(e);
+      return;
     }
   });
 
