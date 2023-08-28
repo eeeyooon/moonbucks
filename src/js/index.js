@@ -15,11 +15,20 @@ function App() {
   // 상태(변하는 데이터) - 메뉴명
   // 메뉴명은 App이란 함수, 객체가 가지고 있는 상태이기 때문에 this로 관리
   // this.menu라는 상태의 값을 가질 수 있게 선언.
-  this.menu = [];
+
+  this.menu = {
+    espresso: [],
+    frappuccino: [],
+    blended: [],
+    teavana: [],
+    desert: [],
+  };
+
+  this.currentCategory = "espresso";
 
   // 앱이 처음 생성될 때 (첫 로딩될 때) 로컬스토리지에서 데이터 가져오기 + 렌더링
   this.init = () => {
-    if (store.getLocalStorage().length > 1) {
+    if (store.getLocalStorage()) {
       this.menu = store.getLocalStorage();
     }
     renderMenu();
@@ -27,7 +36,7 @@ function App() {
 
   // this.menu의 값을 가져서 화면에 렌더링 시키는 함수
   const renderMenu = () => {
-    const template = this.menu
+    const template = this.menu[this.currentCategory]
       .map((menuItem, index) => {
         return `<li data-menu-id="${index}" class="menu-list-item d-flex items-center py-2">
       <span class="w-100 pl-2 menu-name">${menuItem.name}</span>
@@ -69,7 +78,7 @@ function App() {
       return;
     }
     const espressoMenuName = $("#espresso-menu-name").value;
-    this.menu.push({ name: espressoMenuName });
+    this.menu[this.currentCategory].push({ name: espressoMenuName });
 
     // 로컬스토리지에 저장
     store.setLocalStorage(this.menu);
@@ -83,7 +92,7 @@ function App() {
     const menuId = e.target.closest("li").dataset.menuId;
     const $menuName = e.target.closest("li").querySelector(".menu-name");
     const updatedMenuName = prompt("메뉴명을 수정하세요.", $menuName.innerText);
-    this.menu[menuId].name = updatedMenuName;
+    this.menu[this.currentCategory][menuId].name = updatedMenuName;
     store.setLocalStorage(this.menu);
     $menuName.innerText = updatedMenuName;
   };
@@ -92,7 +101,7 @@ function App() {
   const removeMenuName = (e) => {
     if (confirm("메뉴를 삭제하시겠습니까?")) {
       const menuId = e.target.closest("li").dataset.menuId;
-      this.menu.splice(menuId, 1);
+      this.menu[this.currentCategory].splice(menuId, 1);
       e.target.closest("li").remove();
       store.setLocalStorage(this.menu);
       updateMenuCount();
@@ -122,6 +131,15 @@ function App() {
   $("#espresso-menu-name").addEventListener("keypress", (e) => {
     if (e.key === "Enter") {
       addMenuName();
+    }
+  });
+
+  // 메뉴 버튼 클릭 시 해당 메뉴 관리로 변경. (상위태그인 nav에 이벤트 걸기)
+  $("nav").addEventListener("click", (e) => {
+    const isCategoryButton = e.target.classList.contains("cafe-category-name");
+    if (isCategoryButton) {
+      const categoryName = e.target.dataset.categoryName;
+      console.log(categoryName);
     }
   });
 }
