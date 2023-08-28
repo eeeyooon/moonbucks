@@ -1,15 +1,5 @@
-// document.querySelector 유틸함수로 빼기
-const $ = (selector) => document.querySelector(selector);
-
-//로컬스토리지에 저장하고, 가져오는 객체
-const store = {
-  setLocalStorage(menu) {
-    localStorage.setItem("menu", JSON.stringify(menu));
-  },
-  getLocalStorage() {
-    return JSON.parse(localStorage.getItem("menu"));
-  },
-};
+import { $ } from "./utils/dom.js";
+import store from "./store/index.js";
 
 function App() {
   // 상태(변하는 데이터) - 메뉴명
@@ -32,6 +22,7 @@ function App() {
       this.menu = store.getLocalStorage();
     }
     renderMenu();
+    initEventListeners();
   };
 
   // this.menu의 값을 가져서 화면에 렌더링 시키는 함수
@@ -69,13 +60,12 @@ function App() {
 
     // 총 카운트. menu-count 가져오기
     // li 개수를 카운팅 > 함수로 뺌
-
     updateMenuCount();
   };
 
   // 메뉴 카운트하는 함수 따로 빼기
   const updateMenuCount = () => {
-    const menuCount = $("#menu-list").querySelectorAll("li").length;
+    const menuCount = this.menu[this.currentCategory].length;
     $(".menu-count").innerText = `총 ${menuCount}개`;
   };
 
@@ -102,7 +92,7 @@ function App() {
     const updatedMenuName = prompt("메뉴명을 수정하세요.", $menuName.innerText);
     this.menu[this.currentCategory][menuId].name = updatedMenuName;
     store.setLocalStorage(this.menu);
-    $menuName.innerText = updatedMenuName;
+    renderMenu();
   };
 
   // 메뉴 삭제하는 함수
@@ -110,9 +100,8 @@ function App() {
     if (confirm("메뉴를 삭제하시겠습니까?")) {
       const menuId = e.target.closest("li").dataset.menuId;
       this.menu[this.currentCategory].splice(menuId, 1);
-      e.target.closest("li").remove();
       store.setLocalStorage(this.menu);
-      updateMenuCount();
+      renderMenu();
     }
   };
 
@@ -125,49 +114,52 @@ function App() {
     renderMenu();
   };
 
-  // 수정, 삭제, 품절 버튼 로직 처리
-  $("#menu-list").addEventListener("click", (e) => {
-    if (e.target.classList.contains("menu-edit-button")) {
-      updateMenuName(e);
-      return;
-    }
+  const initEventListeners = () => {
+    // 수정, 삭제, 품절 버튼 로직 처리
+    $("#menu-list").addEventListener("click", (e) => {
+      if (e.target.classList.contains("menu-edit-button")) {
+        updateMenuName(e);
+        return;
+      }
 
-    if (e.target.classList.contains("menu-remove-button")) {
-      removeMenuName(e);
-      return;
-    }
+      if (e.target.classList.contains("menu-remove-button")) {
+        removeMenuName(e);
+        return;
+      }
 
-    if (e.target.classList.contains("menu-sold-out-button")) {
-      soldOutMenu(e);
-      return;
-    }
-  });
+      if (e.target.classList.contains("menu-sold-out-button")) {
+        soldOutMenu(e);
+        return;
+      }
+    });
 
-  // form 태그가 자동으로 전송되는 걸 막아준다.
-  $("#menu-form").addEventListener("submit", (e) => {
-    e.preventDefault();
-  });
+    // form 태그가 자동으로 전송되는 걸 막아준다.
+    $("#menu-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+    });
 
-  // 메뉴이름 입력받고 확인 버튼 클릭 시 메뉴 추가
-  $("#menu-submit-button").addEventListener("click", addMenuName);
+    // 메뉴이름 입력받고 확인 버튼 클릭 시 메뉴 추가
+    $("#menu-submit-button").addEventListener("click", addMenuName);
 
-  // 메뉴의 이름 입력 받기
-  $("#menu-name").addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-      addMenuName();
-    }
-  });
+    // 메뉴의 이름 입력 받기
+    $("#menu-name").addEventListener("keypress", (e) => {
+      if (e.key === "Enter") {
+        addMenuName();
+      }
+    });
 
-  // 메뉴 버튼 클릭 시 해당 메뉴 관리로 변경. (상위태그인 nav에 이벤트 걸기)
-  $("nav").addEventListener("click", (e) => {
-    const isCategoryButton = e.target.classList.contains("cafe-category-name");
-    if (isCategoryButton) {
-      const categoryName = e.target.dataset.categoryName;
-      this.currentCategory = categoryName;
-      $("#category-title").innerText = `${e.target.innerText} 메뉴 관리`;
-      renderMenu();
-    }
-  });
+    // 메뉴 버튼 클릭 시 해당 메뉴 관리로 변경. (상위태그인 nav에 이벤트 걸기)
+    $("nav").addEventListener("click", (e) => {
+      const isCategoryButton =
+        e.target.classList.contains("cafe-category-name");
+      if (isCategoryButton) {
+        const categoryName = e.target.dataset.categoryName;
+        this.currentCategory = categoryName;
+        $("#category-title").innerText = `${e.target.innerText} 메뉴 관리`;
+        renderMenu();
+      }
+    });
+  };
 }
 
 const app = new App();
