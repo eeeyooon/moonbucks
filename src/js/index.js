@@ -57,7 +57,7 @@ function App() {
       .join("");
 
     //li태그들을 하나로 묶었기 때문에 (template) innerHTML로 추가
-    $("#espresso-menu-list").innerHTML = template;
+    $("#menu-list").innerHTML = template;
 
     // 총 카운트. menu-count 가져오기
     // li 개수를 카운팅 > 함수로 뺌
@@ -67,24 +67,24 @@ function App() {
 
   // 메뉴 카운트하는 함수 따로 빼기
   const updateMenuCount = () => {
-    const menuCount = $("#espresso-menu-list").querySelectorAll("li").length;
+    const menuCount = $("#menu-list").querySelectorAll("li").length;
     $(".menu-count").innerText = `총 ${menuCount}개`;
   };
 
   // 메뉴이름을 입력받고 li로 추가하는 함수
   const addMenuName = () => {
-    if ($("#espresso-menu-name").value === "") {
+    if ($("#menu-name").value === "") {
       alert("메뉴를 입력해주세요.");
       return;
     }
-    const espressoMenuName = $("#espresso-menu-name").value;
+    const espressoMenuName = $("#menu-name").value;
     this.menu[this.currentCategory].push({ name: espressoMenuName });
 
     // 로컬스토리지에 저장
     store.setLocalStorage(this.menu);
 
     renderMenu();
-    $("#espresso-menu-name").value = "";
+    $("#menu-name").value = "";
   };
 
   // 메뉴 수정하는 함수
@@ -109,7 +109,7 @@ function App() {
   };
 
   // 버튼 클릭 시 메뉴 수정 및 삭제 함수 실행
-  $("#espresso-menu-list").addEventListener("click", (e) => {
+  $("#menu-list").addEventListener("click", (e) => {
     if (e.target.classList.contains("menu-edit-button")) {
       updateMenuName(e);
     }
@@ -120,15 +120,15 @@ function App() {
   });
 
   // form 태그가 자동으로 전송되는 걸 막아준다.
-  $("#espresso-menu-form").addEventListener("submit", (e) => {
+  $("#menu-form").addEventListener("submit", (e) => {
     e.preventDefault();
   });
 
   // 메뉴이름 입력받고 확인 버튼 클릭 시 메뉴 추가
-  $("#espresso-menu-submit-button").addEventListener("click", addMenuName);
+  $("#menu-submit-button").addEventListener("click", addMenuName);
 
   // 메뉴의 이름 입력 받기
-  $("#espresso-menu-name").addEventListener("keypress", (e) => {
+  $("#menu-name").addEventListener("keypress", (e) => {
     if (e.key === "Enter") {
       addMenuName();
     }
@@ -139,7 +139,9 @@ function App() {
     const isCategoryButton = e.target.classList.contains("cafe-category-name");
     if (isCategoryButton) {
       const categoryName = e.target.dataset.categoryName;
-      console.log(categoryName);
+      this.currentCategory = categoryName;
+      $("#category-title").innerText = `${e.target.innerText} 메뉴 관리`;
+      renderMenu();
     }
   });
 }
