@@ -19,17 +19,19 @@ function App() {
 
   // 앱이 처음 생성될 때 (첫 로딩될 때) 서버에서 데이터 가져오기 + 렌더링
   this.init = async () => {
-    this.menu[this.currentCategory] = await MenuApi.getAllMenuByCategory(
-      this.currentCategory
-    );
     renderMenu();
     initEventListeners();
   };
 
   // this.menu의 값을 가져서 화면에 렌더링 시키는 함수
-  const renderMenu = () => {
+  const renderMenu = async () => {
+    // 렌더링 전 최신 데이터를 가져옴.
+    this.menu[this.currentCategory] = await MenuApi.getAllMenuByCategory(
+      this.currentCategory
+    );
+
     const template = this.menu[this.currentCategory]
-      .map((menuItem, index) => {
+      .map((menuItem) => {
         return `<li data-menu-id="${
           menuItem.id
         }" class="menu-list-item d-flex items-center py-2">
@@ -79,12 +81,7 @@ function App() {
       return;
     }
     const MenuName = $("#menu-name").value;
-
     await MenuApi.createMenu(this.currentCategory, MenuName);
-
-    this.menu[this.currentCategory] = await MenuApi.getAllMenuByCategory(
-      this.currentCategory
-    );
     renderMenu();
     $("#menu-name").value = "";
   };
@@ -95,9 +92,6 @@ function App() {
     const $menuName = e.target.closest("li").querySelector(".menu-name");
     const updatedMenuName = prompt("메뉴명을 수정하세요.", $menuName.innerText);
     await MenuApi.updateMenu(this.currentCategory, updatedMenuName, menuId);
-    this.menu[this.currentCategory] = await MenuApi.getAllMenuByCategory(
-      this.currentCategory
-    );
     renderMenu();
   };
 
@@ -106,9 +100,6 @@ function App() {
     if (confirm("메뉴를 삭제하시겠습니까?")) {
       const menuId = e.target.closest("li").dataset.menuId;
       await MenuApi.deleteMenu(this.currentCategory, menuId);
-      this.menu[this.currentCategory] = await MenuApi.getAllMenuByCategory(
-        this.currentCategory
-      );
       renderMenu();
     }
   };
@@ -117,9 +108,6 @@ function App() {
   const soldOutMenu = async (e) => {
     const menuId = e.target.closest("li").dataset.menuId;
     await MenuApi.toggleSoldOutMenu(this.currentCategory, menuId);
-    this.menu[this.currentCategory] = await MenuApi.getAllMenuByCategory(
-      this.currentCategory
-    );
     renderMenu();
   };
 
@@ -165,9 +153,6 @@ function App() {
         const categoryName = e.target.dataset.categoryName;
         this.currentCategory = categoryName;
         $("#category-title").innerText = `${e.target.innerText} 메뉴 관리`;
-        this.menu[this.currentCategory] = await MenuApi.getAllMenuByCategory(
-          this.currentCategory
-        );
         renderMenu();
       }
     });
