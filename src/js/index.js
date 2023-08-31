@@ -54,6 +54,19 @@ const MenuApi = {
       console.error("에러가 발생했습니다.", response);
     }
   },
+
+  // 메뉴 삭제하는 API 함수
+  async deleteMenu(category, menuId) {
+    const response = await fetch(
+      `${BASE_URL}/category/${category}/menu/${menuId}`,
+      {
+        method: "DELETE",
+      }
+    );
+    if (!response.ok) {
+      console.error("에러가 발생했습니다.", response);
+    }
+  },
 };
 
 function App() {
@@ -156,11 +169,13 @@ function App() {
   };
 
   // 메뉴 삭제하는 함수
-  const removeMenuName = (e) => {
+  const removeMenuName = async (e) => {
     if (confirm("메뉴를 삭제하시겠습니까?")) {
       const menuId = e.target.closest("li").dataset.menuId;
-      this.menu[this.currentCategory].splice(menuId, 1);
-      store.setLocalStorage(this.menu);
+      await MenuApi.deleteMenu(this.currentCategory, menuId);
+      this.menu[this.currentCategory] = await MenuApi.getAllMenuByCategory(
+        this.currentCategory
+      );
       renderMenu();
     }
   };
