@@ -80,6 +80,18 @@ function App() {
       alert("메뉴를 입력해주세요.");
       return;
     }
+
+    // 기존에 이미 있는 메뉴인지 체크하기
+    const duplicatedItem = this.menu[this.currentCategory].find(
+      (menuitem) => menuitem.name === $("#menu-name").value
+    );
+
+    if (duplicatedItem) {
+      alert("이미 등록된 메뉴입니다. 다시 입력해주세요");
+      $("#menu-name").value = "";
+      return;
+    }
+
     const MenuName = $("#menu-name").value;
     await MenuApi.createMenu(this.currentCategory, MenuName);
     renderMenu();
