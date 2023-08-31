@@ -1,6 +1,30 @@
 import { $ } from "./utils/dom.js";
 import store from "./store/index.js";
 
+const BASE_URL = "http://localhost:3000/api";
+
+const MenuApi = {
+  // 카테고리 별 데이터 가져오는 API 함수
+  async getAllMenuByCategory(category) {
+    const response = await fetch(`${BASE_URL}/category/${category}/menu`);
+    return response.json();
+  },
+
+  // 메뉴 생성하는 API 함수
+  async createMenu(category, name) {
+    const response = await fetch(`${BASE_URL}/category/${category}/menu`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name }),
+    });
+    if (!response.ok) {
+      console.error("에러가 발생했습니다.", response);
+    }
+  },
+};
+
 function App() {
   // 상태(변하는 데이터) - 메뉴명
   // 메뉴명은 App이란 함수, 객체가 가지고 있는 상태이기 때문에 this로 관리
@@ -16,11 +40,11 @@ function App() {
 
   this.currentCategory = "espresso";
 
-  // 앱이 처음 생성될 때 (첫 로딩될 때) 로컬스토리지에서 데이터 가져오기 + 렌더링
-  this.init = () => {
-    if (store.getLocalStorage()) {
-      this.menu = store.getLocalStorage();
-    }
+  // 앱이 처음 생성될 때 (첫 로딩될 때) 서버에서 데이터 가져오기 + 렌더링
+  this.init = async () => {
+    this.menu[this.currentCategory] = await MenuApi.getAllMenuByCategory(
+      this.currentCategory
+    );
     renderMenu();
     initEventListeners();
   };
@@ -70,17 +94,18 @@ function App() {
   };
 
   // 메뉴이름을 입력받고 li로 추가하는 함수
-  const addMenuName = () => {
+  const addMenuName = async () => {
     if ($("#menu-name").value === "") {
       alert("메뉴를 입력해주세요.");
       return;
     }
-    const espressoMenuName = $("#menu-name").value;
-    this.menu[this.currentCategory].push({ name: espressoMenuName });
+    const MenuName = $("#menu-name").value;
 
-    // 로컬스토리지에 저장
-    store.setLocalStorage(this.menu);
+    await MenuApi.createMenu(this.currentCategory, MenuName);
 
+    this.menu[this.currentCategory] = await MenuApi.getAllMenuByCategory(
+      this.currentCategory
+    );
     renderMenu();
     $("#menu-name").value = "";
   };
